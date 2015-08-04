@@ -56,7 +56,7 @@ class GameViewController : UIViewController {
         scene.addSpritesForComponents(newComponents)
     }
     
-    func handleSwipe(swap:Swap) {
+    /*func handleSwipe(swap:Swap) {
         view.userInteractionEnabled = false
         
         if level.isPossibleSwap(swap) {
@@ -78,7 +78,36 @@ class GameViewController : UIViewController {
             //}
         }
         
+    }*/
+    
+    
+    func handleSwipe(swap:Swap) {
+        view.userInteractionEnabled = false
+        
+        if level.isPossibleSwap(swap) {
+            level.performSwap(swap)
+            /*scene.animateSwap(swap){
+            self.view.userInteractionEnabled = true
+            }*/
+            //scene.animateSwap(swap, completion: handleRxns)
+            scene.animateSwap(swap, completion:
+            {
+            self.view.userInteractionEnabled = true
+            })
+        } else {
+            //scene.direction()
+            //beginNextTurn()
+            //scene.animateInvalidSwap(swap) {
+            self.view.userInteractionEnabled = true
+            
+            //}
+        }
+        
     }
+    
+    
+    
+    
     
     /*func handleRxns() {
         let rxns = level.removepieces(component1: Component, component2: Component)
@@ -92,8 +121,8 @@ class GameViewController : UIViewController {
             return
         }
         scene.animateRxnComponents(rxns) {
-            self.handleRxns()
-            //self.view.userInteractionEnabled = true
+            //self.handleRxns()
+            self.view.userInteractionEnabled = true
             /*let columns = self.level.newcomponents(columns) {
                 self.scene.animateNewComponents(columns) {
                     self.handleRxns()

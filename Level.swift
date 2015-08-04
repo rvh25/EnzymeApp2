@@ -8,8 +8,8 @@
 
 import Foundation
 
-let NumColumns = 9
-let NumRows = 9
+let NumColumns = 10
+let NumRows = 10
 
 class Level {
     private var components = Array2D<Component>(columns: NumColumns, rows: NumRows)
@@ -20,9 +20,9 @@ class Level {
         return components[column, row]
     }
 
-    func shuffle() -> Set<Component> {
+    func shuffle() -> Set2<Component> {
         //return createInitialComponents()
-        var set: Set <Component>
+        var set: Set2 <Component>
         repeat {
             set = createInitialComponents()
             detectPossibleSwaps()
@@ -33,8 +33,8 @@ class Level {
         return set
     }
 
-    private func createInitialComponents() -> Set<Component> {
-        var set = Set<Component>()
+    private func createInitialComponents() -> Set2<Component> {
+        var set = Set2<Component>()
     
         //1
         for row in 0..<NumRows {
@@ -86,24 +86,73 @@ class Level {
         swap.componentA.row = rowB
     }
     
-    private var possibleSwaps = Set<Swap>()
+    private var possibleSwaps = Set2<Swap>()
     
-    private func hasRxnAtColumn(column: Int, row: Int) -> Bool {
-        let type = ComponentType.Enzyme;
+    private func hasRxn(component1: Component, component2: Component) -> Bool {
+        let type = ComponentType.Enzyme
+        var Length = 0
+        //for var i = NumColumns - 1; i >= 0 && components[i, row]?.componentType == type; --i, ++horzLength {}
+        //for var i = column ; i < NumColumns && components[i, row]?.componentType == type; ++i, ++horzLength {}
+        //for var i = component1.column ; i < NumColumns - 1 && component1.componentType == type && component2.componentType != type ; ++i, ++horzLength {}
+        //for var i = component1.column ; i < NumColumns - 1 && component1.componentType != type && component2.componentType == type; ++i, ++horzLength {}
+        
+        if (component1.componentType == type && component2.componentType != type) || (component1.componentType != type && component2.componentType == type) {
+            Length = 1
+        }
+        print("Length: \(Length)")
+        return Length == 1
+        
+        /*print("horzLength: \(horzLength)")
+        
+        //if horzLength == 1
+        //{return true}
+        return horzLength == 1*/
+
+    }
+    
+    /*private func hasRxnAtColumn(component1: Component, component2: Component) -> Bool {
+        let type = ComponentType.Enzyme
+        var vertLength = 0
+        //for var i = NumRows - 1; i >= 0 && components[column, i]?.componentType == type; --i, ++vertLength {}
+        //for var i = row ; i < NumRows && components[column, i]?.componentType == type; ++i, ++vertLength {}
+        /*for var i = component1.row ; i < NumRows - 1 && component1.componentType == type && component2.componentType != type ; ++i, ++vertLength {}
+        for var i = component1.row ; i < NumRows - 1 && component1.componentType != type && component2.componentType == type ; ++i, ++vertLength {}
+        
+        print("vertLength: \(vertLength)")
+        
+        return vertLength == 1*/
+        
+        
+    }*/
+    
+    /*private func hasRxnAtColumn(column: Int, row: Int) -> Bool {
+        let type = ComponentType.Enzyme
+        let type2 = ComponentType.Substrate
         
         let componentType = components[column, row]!.componentType
         
         var horzLength = 0
         //for var i = NumColumns - 1; i >= 0 && components[i, row]?.componentType == type; --i, ++horzLength {}
-        for var i = column ; i < NumColumns && components[i, row]?.componentType == type; ++i, ++horzLength {}
+        //for var i = column ; i < NumColumns && components[i, row]?.componentType == type; ++i, ++horzLength {}
+        for var i = column ; i < NumColumns - 1 && components[i, row]?.componentType == type && components[i + 1, row]?.componentType == type2; ++i, ++horzLength {}
+        
+        
+        print("horzLength: \(horzLength)")
+        
         if horzLength == 1
         {return true}
         
         var vertLength = 0
         //for var i = NumRows - 1; i >= 0 && components[column, i]?.componentType == type; --i, ++vertLength {}
-        for var i = row ; i < NumRows && components[column, i]?.componentType == type; ++i, ++vertLength {}
+        //for var i = row ; i < NumRows && components[column, i]?.componentType == type; ++i, ++vertLength {}
+        for var i = row ; i < NumRows - 1 && components[column, i]?.componentType == type && components[column, i + 1]?.componentType == type2; ++i, ++vertLength {}
+        
+        
+        print("vertLength: \(vertLength)")
+        
         return vertLength == 1
-    }
+    }*/
+    
     
     /*private func hasRxnAtColumn(column: Int, row: Int) -> Bool {
         let type = ComponentType.Enzyme
@@ -127,7 +176,66 @@ class Level {
 
     
     func detectPossibleSwaps() {
-        var set = Set<Swap>()
+        var set = Set2<Swap>()
+        
+        for row in 0..<NumRows {
+            for column in 0..<NumColumns {
+                if let component = components[column, row] {
+                    if column < NumColumns - 1{
+                        if let other = components[column + 1, row] {
+                            //components[column, row] = other
+                            //components[column + 1, row] = component
+                            
+                            
+                            print("component: \(component.column, component.row)")
+                            print("other: \(other.column, other.row)")
+
+                            if hasRxn(component, component2: other) {
+                                set.addElement(Swap(componentA: component, componentB: other))
+                            }
+                            
+                            
+                            /*if hasRxnAtColumn(column + 1, row: row) ||
+                                hasRxnAtColumn(column, row: row) {
+                                set.addElement(Swap(componentA: component, componentB: other))
+                            }*/
+                            
+                            //components[column,row] = component
+                            //components[column + 1, row] = other
+                        }
+                    }
+                    
+                    if row < NumRows - 1 {
+                        if let other = components[column, row + 1] {
+                            //components[column, row] = other
+                            //components[column, row + 1] = component
+                            
+                            
+                            print("component: \(component.column, component.row)")
+                            print("other: \(other.column, other.row)")
+                            
+                            if hasRxn(component, component2: other) {
+                                set.addElement(Swap(componentA: component, componentB: other))
+                            }
+                            
+                            /*if hasRxnAtColumn(column, row: row + 1) ||
+                                hasRxnAtColumn(column, row: row) {
+                                set.addElement(Swap(componentA: component, componentB: other))
+                            }*/
+                            
+                            //components[column, row] = component
+                            //components[column, row + 1] = other
+                        }
+                    }
+                }
+            }
+        }
+        
+        possibleSwaps = set
+    }
+    
+    /*func detectPossibleSwaps() {
+        var set = Set2<Swap>()
         
         for row in 0..<NumRows {
             for column in 0..<NumColumns {
@@ -137,9 +245,14 @@ class Level {
                             components[column, row] = other
                             components[column + 1, row] = component
                             
+                            
+                            print("component: \(component.column, component.row)")
+                            print("other: \(other.column, other.row)")
+                            
+                            
                             if hasRxnAtColumn(column + 1, row: row) ||
                                 hasRxnAtColumn(column, row: row) {
-                                set.addElement(Swap(componentA: component, componentB: other))
+                                    set.addElement(Swap(componentA: component, componentB: other))
                             }
                             
                             components[column,row] = component
@@ -152,9 +265,14 @@ class Level {
                             components[column, row] = other
                             components[column, row + 1] = component
                             
+                            
+                            print("component: \(component.column, component.row)")
+                            print("other: \(other.column, other.row)")
+                            
+                            
                             if hasRxnAtColumn(column, row: row + 1) ||
                                 hasRxnAtColumn(column, row: row) {
-                                set.addElement(Swap(componentA: component, componentB: other))
+                                    set.addElement(Swap(componentA: component, componentB: other))
                             }
                             
                             components[column, row] = component
@@ -166,7 +284,7 @@ class Level {
         }
         
         possibleSwaps = set
-    }
+    }*/
     
     
     func isPossibleSwap(swap: Swap) -> Bool {
@@ -427,8 +545,8 @@ class Level {
     }*/
     
 
-    private func detectHorizontalRxns() -> Set<Rxn> {
-        var set = Set<Rxn>()
+    /*private func detectHorizontalRxns() -> Set2<Rxn> {
+        var set = Set2<Rxn>()
         for row in 0..<NumRows {
             for var column = 0; column < NumColumns - 1; {
                 if let component = components[column, row] {
@@ -472,8 +590,8 @@ class Level {
         return set
     }
     
-    private func detectVerticalRxns() -> Set<Rxn> {
-        var set = Set<Rxn>()
+    private func detectVerticalRxns() -> Set2<Rxn> {
+        var set = Set2<Rxn>()
         for column in 0..<NumColumns {
             for var row = 0; row < NumRows - 1; {
                 if let component = components[column, row] {
@@ -516,9 +634,101 @@ class Level {
             
         }
         return set
+    }*/
+    
+    private func detectHorizontalRxns() -> Set2<Rxn> {
+        var set = Set2<Rxn>()
+        for row in 0..<NumRows {
+            for var column = 0; column < NumColumns - 1; {
+                if let component = components[column, row] {
+                    let matchType = ComponentType.Enzyme
+                    if (component.componentType == matchType && components[column + 1, row]?.componentType == ComponentType.Substrate) || (component.componentType == matchType && components[column - 1, row]?.componentType == ComponentType.Substrate) {
+                        let rxn = Rxn(rxnType: .Horizontal)
+                        /*repeat {
+                            rxn.addComponent(components[column,row]!)
+                            //rxn.addComponent(components[column+1,row]!)
+                            ++column
+                        }
+                            while column < NumColumns && components[column, row]?.componentType == matchType && components[column + 1, row]?.componentType == ComponentType.Substrate*/
+                        
+                        set.addElement(rxn)
+                        continue
+                        
+                    }
+                    
+                    /*for var column = 0; column < NumColumns - 1; {
+                    if let component = components[column, row] {
+                    let rxnType = ComponentType.Enzyme
+                    
+                    
+                    let rxn = Rxn(rxnType: .Horizontal)
+                    do {
+                    rxn.addComponent(components[column,row]!)
+                    --column
+                    }
+                    while column < NumColumns && components[column, row]?.componentType == rxnType
+                    
+                    set.addElement(rxn)
+                    continue
+                    }
+                    --column
+                    }*/
+                }
+                ++column
+            }
+            
+        }
+        return set
+    }
+    
+    private func detectVerticalRxns() -> Set2<Rxn> {
+        var set = Set2<Rxn>()
+        for column in 0..<NumColumns {
+            for var row = 0; row < NumRows - 1; {
+                if let component = components[column, row] {
+                    let matchType = ComponentType.Enzyme
+                    if component.componentType == matchType && components[column, row + 1]?.componentType == ComponentType.Substrate {
+                        let rxn = Rxn(rxnType: .Vertical)
+                        /*repeat {
+                            rxn.addComponent(components[column,row]!)
+                            rxn.addComponent(components[column,row+1]!)
+                            ++row
+                        }
+                            while row < NumRows && components[column, row]?.componentType == /Users/rohainehsu/Documents/EnzymeApp-master/EnzymeApp/GameViewController.swiftmatchType && components[column, row + 1]?.componentType == ComponentType.Substrate*/
+                        
+                        set.addElement(rxn)
+                        continue
+                    }
+                    
+                    
+                    /*for column in 0..<NumColumns {
+                    for var row = 0; row < NumRows - 1; {
+                    if let component = components[column, row] {
+                    let rxnType = ComponentType.Enzyme*/
+                    
+                    /*if  row != 0 && components[column, row - 1]?.componentType == rxnType {
+                    let rxn = Rxn(rxnType: .Vertical)
+                    do {
+                    rxn.addComponent(components[column,row]!)
+                    --row
+                    }
+                    while row < NumRows && components[column, row]?.componentType == rxnType
+                    
+                    set.addElement(rxn)
+                    continue
+                    }
+                    --row
+                    }*/
+                }
+                ++row
+            }
+            
+        }
+        return set
     }
 
-    func removeRxns() -> Set<Rxn> {
+
+    func removeRxns() -> Set2<Rxn> {
         let horizontalRxns = detectHorizontalRxns()
         let verticalRxns = detectVerticalRxns()
         
@@ -527,7 +737,7 @@ class Level {
         return horizontalRxns.unionSet(verticalRxns)
     }
     
-    private func removeComponents(rxns: Set<Rxn>) {
+    private func removeComponents(rxns: Set2<Rxn>) {
         for rxn in rxns {
             for component in rxn.components {
                 components[component.column, component.row] = nil
